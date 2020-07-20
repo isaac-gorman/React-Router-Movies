@@ -1,28 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import MovieCard from "./MovieCard";
 
 const Movie = (props) => {
   const [movie, setMovie] = useState();
- 
+  // I will use the useParams() hook to grab info about the way React Router matches the route
+  const { id } = useParams();
+
   useEffect(() => {
-    const id = 1;
+    // Now I will match props to the route
+    // const id = movie.find((item) => item.id === params.movie);
+    // const id = 4;
     // change ^^^ that line and grab the id from the URL
     // You will NEED to add a dependency array to this effect hook
 
-       axios
-        .get(`http://localhost:5000/api/movies/${id}`)
-        .then(response => {
-          setMovie(response.data);
-        })
-        .catch(error => {
-          console.error(error);
-        });
+    axios
+      .get(`http://localhost:5000/api/movies/${id}`)
+      .then((response) => {
+        setMovie(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
 
-  },[]);
-  
   // Uncomment this only when you have moved on to the stretch goals
-  // const saveMovie = evt => {
-  // }
+  const saveMovie = () => {
+    const addSavedList = props.addSavedList;
+    addSavedList(movie);
+  };
 
   if (!movie) {
     return <div>Loading movie information...</div>;
@@ -32,24 +39,27 @@ const Movie = (props) => {
   return (
     <div className="save-wrapper">
       <div className="movie-card">
-        <h2>{title}</h2>
+        {/* <h2>{title}</h2>
         <div className="movie-director">
           Director: <em>{director}</em>
         </div>
         <div className="movie-metascore">
           Metascore: <strong>{metascore}</strong>
-        </div>
+        </div> */}
+        <MovieCard title={title} director={director} metascore={metascore} />
         <h3>Actors</h3>
 
-        {stars.map(star => (
+        {stars.map((star) => (
           <div key={star} className="movie-star">
             {star}
           </div>
         ))}
       </div>
-      <div className="save-button">Save</div>
+      <div onClick={saveMovie} className="save-button">
+        Save
+      </div>
     </div>
   );
-}
+};
 
 export default Movie;
